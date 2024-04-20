@@ -6,6 +6,7 @@ from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 from models.city import City
 from models.engine.file_storage import FileStorage
+from os import getenv
 
 
 class State(BaseModel, Base):
@@ -19,9 +20,10 @@ class State(BaseModel, Base):
         """initializes state"""
         super().__init__(*args, **kwargs)
 
-    @property
-    def cities(self):
-        """Getter function for cities"""
-        storage = FileStorage()
-        return [city for city in storage.all(City).values()
-                if city.state_id == self.id]
+    if getenv('HBNB_TYPE_STORAGE') != "db":
+        @property
+        def cities(self):
+            """Getter function for cities"""
+            storage = FileStorage()
+            return [city for city in storage.all(City).values()
+                    if city.state_id == self.id]
